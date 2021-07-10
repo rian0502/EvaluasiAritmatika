@@ -95,3 +95,17 @@ break;
 }
 }
 return stac[0];
+}
+void getdata()
+{
+cin.getline(inf,30);
+}
+};
+int main()
+{
+postfix con;
+con.getdata();
+con.konversi();
+cout<<con.selesai();
+return 0;
+}
