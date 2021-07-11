@@ -1,3 +1,12 @@
+/*
+Nama Anggota
+Bagus tito
+Muhammad Febrian
+Fajar Adi
+*/ 
+
+
+
 #include <iostream>
 #include  <string>
 #include <cstring>
