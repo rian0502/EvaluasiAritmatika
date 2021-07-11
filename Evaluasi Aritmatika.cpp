@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool isOperator(char x){
+bool Operator(char x){
     if(x == '+' || x == '-' || x == '*' || x == '/' || x == '%'){
         return true;
     }else{
@@ -9,7 +9,7 @@ bool isOperator(char x){
     }
 }
 
-int precendence(string x){
+int Prioritas(string x){
     if(x == "+" || x == "-"){
         return 1;
     }
@@ -21,8 +21,8 @@ int precendence(string x){
 
 bool bigOne(string x, string y){
     int xValue, yValue;
-    xValue = precendence(x);
-    yValue = precendence(y);
+    xValue = Prioritas(x);
+    yValue = Prioritas(y);
     return xValue <= yValue;
 }
 
@@ -52,7 +52,71 @@ vector <string>::iterator itr;
 vector <string>::iterator it;
 vector <string>::iterator iter;
 
-void input(){
+void PostFiks(){
+    stack <string> temp2;
+    int i = 0;
+    for(itr = infix.begin(); itr != infix.end() ; itr++, i++){
+        if(isdigit(infix[i].back())){
+            postfix.push_back(infix[i]);
+            continue;
+        }
+        if(infix[i] == "("){
+            temp2.push(infix[i]);
+            continue;
+        }
+        if(infix[i] == ")"){
+            while(!temp2.empty() && (temp2.top() != "(")){
+                string toPush = temp2.top();
+                postfix.push_back(toPush);
+                temp2.pop();
+            }
+            temp2.pop();
+            continue;
+        }
+        if(Operator(infix[i][0])){
+            if(temp2.empty() || temp2.top() == "("){
+                temp2.push(infix[i]);
+            }
+            else{
+                while(!temp2.empty() && (temp2.top() != "(") && bigOne(infix[i], temp2.top())){
+                    string toPush = temp2.top();
+                    postfix.push_back(toPush);
+                    temp2.pop();
+                }
+                temp2.push(infix[i] );
+            }
+            continue;
+        }
+    }
+    while(!temp2.empty()){
+        string toPush = temp2.top();
+        postfix.push_back(toPush);
+        temp2.pop();
+    }
+}
+
+void HasilOperasi(){
+    stack <string> temp2;
+    int i = 0;
+    double res;
+    for(iter = postfix.begin(); iter != postfix.end() ; iter++, i++){
+        if(isdigit(postfix[i].back())){
+            temp2.push(postfix[i]);
+        }
+        else{
+            double A = strtod((temp2.top()).c_str(), NULL);
+            temp2.pop();
+            double B = strtod((temp2.top()).c_str(), NULL);
+            temp2.pop();
+            res = execute(B, A, postfix[i]);
+            temp2.push(to_string(res));
+        }
+    }
+    res = strtod((temp2.top()).c_str(), NULL);
+    cout << res << endl;
+}
+
+int main(){
     string str;
     char ch;
     while(cin.get(ch)){
@@ -77,12 +141,12 @@ void input(){
             temp.push_back(str[i]);
             continue;
         }
-        if(isOperator(str[i])){
+        if(Operator(str[i])){
             if(temp.length() != 0){
                 infix.push_back(temp);
                 temp.clear();
             }
-            if((str[i] == '-' && isOperator(str[i-1])) || (str[i] == '-' && i == 0 && str[i+1] == '(') || (str[i] == '-' && str[i-1] == '(')){
+            if((str[i] == '-' && Operator(str[i-1])) || (str[i] == '-' && i == 0 && str[i+1] == '(') || (str[i] == '-' && str[i-1] == '(')){
                 infix.push_back("-1");
                 infix.push_back("*");
             }else{
@@ -94,74 +158,7 @@ void input(){
         infix.push_back(temp);
         temp.clear();
     }
-}
-
-void toPostfix(){
-    stack <string> temp2;
-    int i = 0;
-    for(itr = infix.begin(); itr != infix.end() ; itr++, i++){
-        if(isdigit(infix[i].back())){
-            postfix.push_back(infix[i]);
-            continue;
-        }
-        if(infix[i] == "("){
-            temp2.push(infix[i]);
-            continue;
-        }
-        if(infix[i] == ")"){
-            while(!temp2.empty() && (temp2.top() != "(")){
-                string toPush = temp2.top();
-                postfix.push_back(toPush);
-                temp2.pop();
-            }
-            temp2.pop();
-            continue;
-        }
-        if(isOperator(infix[i][0])){
-            if(temp2.empty() || temp2.top() == "("){
-                temp2.push(infix[i]);
-            }
-            else{
-                while(!temp2.empty() && (temp2.top() != "(") && bigOne(infix[i], temp2.top())){
-                    string toPush = temp2.top();
-                    postfix.push_back(toPush);
-                    temp2.pop();
-                }
-                temp2.push(infix[i] );
-            }
-            continue;
-        }
-    }
-    while(!temp2.empty()){
-        string toPush = temp2.top();
-        postfix.push_back(toPush);
-        temp2.pop();
-    }
-}
-
-void result(){
-    stack <string> temp2;
-    int i = 0;
-    double res;
-    for(iter = postfix.begin(); iter != postfix.end() ; iter++, i++){
-        if(isdigit(postfix[i].back())){
-            temp2.push(postfix[i]);
-        }
-        else{
-            double A = strtod((temp2.top()).c_str(), NULL);
-            temp2.pop();
-            double B = strtod((temp2.top()).c_str(), NULL);
-            temp2.pop();
-            res = execute(B, A, postfix[i]);
-            temp2.push(to_string(res));
-        }
-    }
-    res = strtod((temp2.top()).c_str(), NULL);
-    cout << res << endl;
-}
-
-int main(){
-    input();
-    toPostfix();
-    result();
+    PostFiks();
+    HasilOperasi();
+    return 0;
 }
