@@ -1,3 +1,10 @@
+/*
+Nama Anggota
+Bagus tito
+Muhammad Febrian
+Fajar Adi
+*/ 
+
 #include <bits/stdc++.h>
 using namespace std;
 
